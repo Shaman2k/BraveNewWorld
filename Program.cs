@@ -285,12 +285,13 @@ namespace Brave_New_World
             bool isAlive = true;
             int percent = 100;
             int playerDamageModifier = 10;
+            int maxDamageModifier = 2;
             int playerMinDamage = playerMaxHealth * playerDamageModifier / percent;
-            int playerMaxDamage = playerMinDamage * 2;
+            int playerMaxDamage = playerMinDamage * maxDamageModifier;
             int mobHealth = playerMaxHealth * mobDifficulty / percent;
             int mobDamageModifier = 25;
             int mobMinDamage = mobHealth * mobDamageModifier / percent;
-            int mobMaxDamage = mobMinDamage * 2;
+            int mobMaxDamage = mobMinDamage * maxDamageModifier;
             Console.SetCursorPosition(0, coordAdvenchureLog);
             Console.Write("Вы встретили " + mobName + "!\n");
             coordAdvenchureLog++;
