@@ -71,6 +71,7 @@ namespace Brave_New_World
             bool mob3Alive = true;
             string mob4Name = "Древний леший";
             int mob4Difficulty = 80;
+            bool mob4Alive = true;
             int playerPositionX;
             int playerPositionY;
             int mob1PositionX;
@@ -114,7 +115,7 @@ namespace Brave_New_World
                         HealPlayer(ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
                         break;
                     case '?':
-                        isPlaying = Fight(random, mob4Name, mob4Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
+                        Fight(random, mob4Name, mob4Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog, ref mob4Alive);
                         break;
                     default:
                         break;
@@ -123,22 +124,21 @@ namespace Brave_New_World
 
                 if (playerPositionX == mob1PositionX && playerPositionY == mob1PositionY)
                 {
-                    mob1Alive = Fight(random, mob1Name, mob1Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
+                    Fight(random, mob1Name, mob1Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog, ref mob1Alive);
                 }
 
                 if (playerPositionX == mob2PositionX && playerPositionY == mob2PositionY)
                 {
-                    mob2Alive = Fight(random, mob2Name, mob2Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
+                    Fight(random, mob2Name, mob2Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog, ref mob2Alive);
                 }
 
                 if (playerPositionX == mob3PositionX && playerPositionY == mob3PositionY)
                 {
-                    mob3Alive = Fight(random, mob3Name, mob3Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
+                    Fight(random, mob3Name, mob3Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog, ref mob3Alive);
                 }
-
-                MovingMob(random, '!', ',', map, ref mob1PositionX, ref mob1PositionY, ref mob1DeltaX, ref mob1DeltaY, ref mob1Alive);
-                MovingMob(random, '*', ' ', map, ref mob2PositionX, ref mob2PositionY, ref mob2DeltaX, ref mob2DeltaY, ref mob2Alive);
-                MovingMob(random, '$', '/', map, ref mob3PositionX, ref mob3PositionY, ref mob3DeltaX, ref mob3DeltaY, ref mob3Alive);
+                MoveMob(random, '!', ',', map, ref mob1PositionX, ref mob1PositionY, ref mob1DeltaX, ref mob1DeltaY, ref mob1Alive);
+                MoveMob(random, '*', ' ', map, ref mob2PositionX, ref mob2PositionY, ref mob2DeltaX, ref mob2DeltaY, ref mob2Alive);
+                MoveMob(random, '$', '/', map, ref mob3PositionX, ref mob3PositionY, ref mob3DeltaX, ref mob3DeltaY, ref mob3Alive);
                 System.Threading.Thread.Sleep(200);
             }
             alreadyPlayed = true;
@@ -280,10 +280,9 @@ namespace Brave_New_World
             logCoordinate++;
         }
 
-        static bool Fight(Random random, string mobName, int mobDifficulty, int coordHealthBar, ref bool isPlaying, ref int playerHealth, ref int playerMaxHealth, ref int coordAdvenchureLog)
+        static void Fight(Random random, string mobName, int mobDifficulty, int coordHealthBar, ref bool isPlaying, ref int playerHealth, ref int playerMaxHealth, ref int coordAdvenchureLog, ref bool ismobAlive)
         {
             bool isAlive = true;
-            bool ismobAlive = true;
             int percent = 100;
             int playerDamageModifier = 10;
             int playerMinDamage = playerMaxHealth * playerDamageModifier / percent;
@@ -295,7 +294,6 @@ namespace Brave_New_World
             Console.SetCursorPosition(0, coordAdvenchureLog);
             Console.Write("Вы встретили " + mobName + "!\n");
             coordAdvenchureLog++;
-            int bonusHealth = 50;
 
             while (isAlive)
             {
@@ -307,28 +305,10 @@ namespace Brave_New_World
                     isAlive = false;
                 }
             }
-            if (mobHealth <= 0)
-            {
-                playerMaxHealth += bonusHealth;
-                Console.SetCursorPosition(0, coordHealthBar);
-                Console.Write($"У вас {playerHealth} из {playerMaxHealth} здоровья.     ");
-                Console.SetCursorPosition(0, coordAdvenchureLog);
-                Console.Write("Вы победили " + mobName + " и получаете в награду +" + bonusHealth + " единиц здоровья\n");
-                coordAdvenchureLog++;
-            }
-            else
-            {
-                Console.Clear();
-                Console.WriteLine($"Не повезло! {mobName} оказался сильнее! Вы теряете {bonusHealth} здоровья.\nПопробуйте еще раз.");
-                playerMaxHealth -= bonusHealth;
-                isPlaying = false;
-                Console.ReadKey();
-            }
-            ismobAlive = false;
-            return ismobAlive;
+            ismobAlive = CheckFightResult(mobName, mobHealth, ref playerMaxHealth, ref playerHealth, coordHealthBar, ref coordAdvenchureLog, ref isPlaying);
         }
 
-        static void MovingMob(Random random, char mobSymbol, char mobAreaSymbol, char[,] map, ref int mobPositionX, ref int mobPositionY, ref int mobDeltaX, ref int mobDeltaY, ref bool isMobAlive)
+        static void MoveMob(Random random, char mobSymbol, char mobAreaSymbol, char[,] map, ref int mobPositionX, ref int mobPositionY, ref int mobDeltaX, ref int mobDeltaY, ref bool isMobAlive)
         {
             if (isMobAlive)
             {
@@ -346,6 +326,33 @@ namespace Brave_New_World
                 mobPositionX = 0;
                 mobPositionY = 0;
             }
+
+        }
+        static bool CheckFightResult(string mobName, int mobHealth, ref int playerMaxHealth, ref int playerHealth, int coordHealthBar, ref int coordAdvenchureLog, ref bool isPlaying)
+        {
+            int bonusHealth = 50;
+            bool ismobAlive;
+
+            if (mobHealth <= 0)
+            {
+                playerMaxHealth += bonusHealth;
+                Console.SetCursorPosition(0, coordHealthBar);
+                Console.Write($"У вас {playerHealth} из {playerMaxHealth} здоровья.     ");
+                Console.SetCursorPosition(0, coordAdvenchureLog);
+                Console.Write("Вы победили " + mobName + " и получаете в награду +" + bonusHealth + " единиц здоровья\n");
+                coordAdvenchureLog++;
+                ismobAlive = false;
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine($"Не повезло! {mobName} оказался сильнее! Вы теряете {bonusHealth} здоровья.\nПопробуйте еще раз.");
+                playerMaxHealth -= bonusHealth;
+                isPlaying = false;
+                ismobAlive = true;
+                Console.ReadKey();
+            }
+            return ismobAlive;
         }
     }
 }
