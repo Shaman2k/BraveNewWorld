@@ -67,10 +67,10 @@ namespace Brave_New_World
             int mob2Difficulty = 40;
             bool mob2Alive = true;
             string mob3Name = "Жуткий волк";
-            int mob3Difficulty = 70;
+            int mob3Difficulty = 60;
             bool mob3Alive = true;
             string mob4Name = "Древний леший";
-            int mob4Difficulty = 90;
+            int mob4Difficulty = 80;
             int playerPositionX;
             int playerPositionY;
             int mob1PositionX;
@@ -136,56 +136,9 @@ namespace Brave_New_World
                     mob3Alive = Fight(random, mob3Name, mob3Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
                 }
 
-                if (mob1Alive)
-                {
-                    if (map[mob1PositionX + mob1DeltaX, mob1PositionY + mob1DeltaY] == ',')
-                    {
-                        Move(map, '!', ref mob1PositionX, ref mob1PositionY, mob1DeltaX, mob1DeltaY);
-                    }
-                    else
-                    {
-                        ChangeDirection(random, ref mob1DeltaX, ref mob1DeltaY);
-                    }
-                }
-                else
-                {
-                    mob1PositionX = 0;
-                    mob1PositionY = 0;
-                }
-
-                if (mob2Alive)
-                {
-                    if (map[mob2PositionX + mob2DeltaX, mob2PositionY + mob2DeltaY] == ' ')
-                    {
-                        Move(map, '*', ref mob2PositionX, ref mob2PositionY, mob2DeltaX, mob2DeltaY);
-                    }
-                    else
-                    {
-                        ChangeDirection(random, ref mob2DeltaX, ref mob2DeltaY);
-                    }
-                }
-                else
-                {
-                    mob2PositionX = 0;
-                    mob2PositionY = 0;
-                }
-
-                if (mob3Alive)
-                {
-                    if (map[mob3PositionX + mob3DeltaX, mob3PositionY + mob3DeltaY] == '/')
-                    {
-                        Move(map, '$', ref mob3PositionX, ref mob3PositionY, mob3DeltaX, mob3DeltaY);
-                    }
-                    else
-                    {
-                        ChangeDirection(random, ref mob3DeltaX, ref mob3DeltaY);
-                    }
-                }
-                else
-                {
-                    mob3PositionX= 0;
-                    mob3PositionY = 0;
-                }
+                MovingMob(random, '!', ',', map, ref mob1PositionX, ref mob1PositionY, ref mob1DeltaX, ref mob1DeltaY, ref mob1Alive);
+                MovingMob(random, '*', ' ', map, ref mob2PositionX, ref mob2PositionY, ref mob2DeltaX, ref mob2DeltaY, ref mob2Alive);
+                MovingMob(random, '$', '/', map, ref mob3PositionX, ref mob3PositionY, ref mob3DeltaX, ref mob3DeltaY, ref mob3Alive);
                 System.Threading.Thread.Sleep(200);
             }
             alreadyPlayed = true;
@@ -373,6 +326,26 @@ namespace Brave_New_World
             }
             ismobAlive = false;
             return ismobAlive;
+        }
+
+        static void MovingMob(Random random, char mobSymbol, char mobAreaSymbol, char[,] map, ref int mobPositionX, ref int mobPositionY, ref int mobDeltaX, ref int mobDeltaY, ref bool isMobAlive)
+        {
+            if (isMobAlive)
+            {
+                if (map[mobPositionX + mobDeltaX, mobPositionY + mobDeltaY] == mobAreaSymbol)
+                {
+                    Move(map, mobSymbol, ref mobPositionX, ref mobPositionY, mobDeltaX, mobDeltaY);
+                }
+                else
+                {
+                    ChangeDirection(random, ref mobDeltaX, ref mobDeltaY);
+                }
+            }
+            else
+            {
+                mobPositionX = 0;
+                mobPositionY = 0;
+            }
         }
     }
 }
