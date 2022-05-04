@@ -71,23 +71,23 @@ namespace Brave_New_World
             bool mob3Alive = true;
             string mob4Name = "Древний леший";
             int mob4Difficulty = 90;
-            int playerX;
-            int playerY;
-            int mob1X;
-            int mob1Y;
-            int mob2X;
-            int mob2Y;
-            int mob3X;
-            int mob3Y;
-            int playerDX = 0;
-            int playerDY = 0;
-            int mob1DX = 1;
-            int mob1DY = 0;
-            int mob2DX = 1;
-            int mob2DY = 0;
-            int mob3DX = 0;
-            int mob3DY = -1;
-            char[,] map = ReadMap("map1", out playerX, out playerY, out mob1X, out mob1Y, out mob2X, out mob2Y, out mob3X, out mob3Y);
+            int playerPositionX;
+            int playerPositionY;
+            int mob1PositionX;
+            int mob1PositionY;
+            int mob2PositionX;
+            int mob2PositionY;
+            int mob3PositionX;
+            int mob3PositionY;
+            int playerDeltaX = 0;
+            int playerDeltaY = 0;
+            int mob1DeltaX = 1;
+            int mob1DeltaY = 0;
+            int mob2DeltaX = 1;
+            int mob2DeltaY = 0;
+            int mob3DeltaX = 0;
+            int mob3DeltaY = -1;
+            char[,] map = ReadMap("map1", out playerPositionX, out playerPositionY, out mob1PositionX, out mob1PositionY, out mob2PositionX, out mob2PositionY, out mob3PositionX, out mob3PositionY);
             DrawMap(map);
             int coordAdvenchureLog = map.GetLength(0) + 3;
             int coordHealthBar = map.GetLength(0) + 2;
@@ -100,15 +100,15 @@ namespace Brave_New_World
                 if (Console.KeyAvailable)
                 {
                     ConsoleKeyInfo key = Console.ReadKey(true);
-                    ChangeDirection(key, ref playerDX, ref playerDY);
+                    ChangeDirection(key, ref playerDeltaX, ref playerDeltaY);
                 }
-                char nextCell = map[playerX + playerDX, playerY + playerDY];
+                char nextCell = map[playerPositionX + playerDeltaX, playerPositionY + playerDeltaY];
 
                 switch (nextCell)
                 {
                     case '#':
-                        playerDX = 0;
-                        playerDY = 0;
+                        playerDeltaX = 0;
+                        playerDeltaY = 0;
                         break;
                     case '^':
                         HealPlayer(ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
@@ -119,72 +119,72 @@ namespace Brave_New_World
                     default:
                         break;
                 }
-                Move(map, '@', ref playerX, ref playerY, playerDX, playerDY);
+                Move(map, '@', ref playerPositionX, ref playerPositionY, playerDeltaX, playerDeltaY);
 
-                if (playerX == mob1X && playerY == mob1Y)
+                if (playerPositionX == mob1PositionX && playerPositionY == mob1PositionY)
                 {
                     mob1Alive = Fight(random, mob1Name, mob1Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
                 }
 
-                if (playerX == mob2X && playerY == mob2Y)
+                if (playerPositionX == mob2PositionX && playerPositionY == mob2PositionY)
                 {
                     mob2Alive = Fight(random, mob2Name, mob2Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
                 }
 
-                if (playerX == mob3X && playerY == mob3Y)
+                if (playerPositionX == mob3PositionX && playerPositionY == mob3PositionY)
                 {
                     mob3Alive = Fight(random, mob3Name, mob3Difficulty, coordHealthBar, ref isPlaying, ref playerHealth, ref playerMaxHealth, ref coordAdvenchureLog);
                 }
 
                 if (mob1Alive)
                 {
-                    if (map[mob1X + mob1DX, mob1Y + mob1DY] == ',')
+                    if (map[mob1PositionX + mob1DeltaX, mob1PositionY + mob1DeltaY] == ',')
                     {
-                        Move(map, '!', ref mob1X, ref mob1Y, mob1DX, mob1DY);
+                        Move(map, '!', ref mob1PositionX, ref mob1PositionY, mob1DeltaX, mob1DeltaY);
                     }
                     else
                     {
-                        ChangeDirection(random, ref mob1DX, ref mob1DY);
+                        ChangeDirection(random, ref mob1DeltaX, ref mob1DeltaY);
                     }
                 }
                 else
                 {
-                    mob1X = 0;
-                    mob1Y = 0;
+                    mob1PositionX = 0;
+                    mob1PositionY = 0;
                 }
 
                 if (mob2Alive)
                 {
-                    if (map[mob2X + mob2DX, mob2Y + mob2DY] == ' ')
+                    if (map[mob2PositionX + mob2DeltaX, mob2PositionY + mob2DeltaY] == ' ')
                     {
-                        Move(map, '*', ref mob2X, ref mob2Y, mob2DX, mob2DY);
+                        Move(map, '*', ref mob2PositionX, ref mob2PositionY, mob2DeltaX, mob2DeltaY);
                     }
                     else
                     {
-                        ChangeDirection(random, ref mob2DX, ref mob2DY);
+                        ChangeDirection(random, ref mob2DeltaX, ref mob2DeltaY);
                     }
                 }
                 else
                 {
-                    mob2X = 0;
-                    mob2Y = 0;
+                    mob2PositionX = 0;
+                    mob2PositionY = 0;
                 }
 
                 if (mob3Alive)
                 {
-                    if (map[mob3X + mob3DX, mob3Y + mob3DY] == '/')
+                    if (map[mob3PositionX + mob3DeltaX, mob3PositionY + mob3DeltaY] == '/')
                     {
-                        Move(map, '$', ref mob3X, ref mob3Y, mob3DX, mob3DY);
+                        Move(map, '$', ref mob3PositionX, ref mob3PositionY, mob3DeltaX, mob3DeltaY);
                     }
                     else
                     {
-                        ChangeDirection(random, ref mob3DX, ref mob3DY);
+                        ChangeDirection(random, ref mob3DeltaX, ref mob3DeltaY);
                     }
                 }
                 else
                 {
-                    mob3X= 0;
-                    mob3Y = 0;
+                    mob3PositionX= 0;
+                    mob3PositionY = 0;
                 }
                 System.Threading.Thread.Sleep(200);
             }
@@ -193,16 +193,16 @@ namespace Brave_New_World
             Console.CursorVisible = true;
         }
 
-        static char[,] ReadMap(string mapName, out int playerX, out int playerY, out int mob1X, out int mob1Y, out int mob2X, out int mob2Y, out int mob3X, out int mob3Y)
+        static char[,] ReadMap(string mapName, out int playerPositionX, out int playerPositionY, out int mob1PositionX, out int mob1PositionY, out int mob2PositionX, out int mob2PositionY, out int mob3PositionX, out int mob3PositionY)
         {
-            playerX = 0;
-            playerY = 0;
-            mob1X = 0;
-            mob1Y = 0;
-            mob2X = 0;
-            mob2Y = 0;
-            mob3X = 0;
-            mob3Y = 0;
+            playerPositionX = 0;
+            playerPositionY = 0;
+            mob1PositionX = 0;
+            mob1PositionY = 0;
+            mob2PositionX = 0;
+            mob2PositionY = 0;
+            mob3PositionX = 0;
+            mob3PositionY = 0;
 
             string[] newFile = File.ReadAllLines($"Maps/{mapName}.txt");
             char[,] map = new char[newFile.Length, newFile[0].Length];
@@ -215,26 +215,26 @@ namespace Brave_New_World
 
                     if (map[i, j] == '@')
                     {
-                        playerX = i;
-                        playerY = j;
+                        playerPositionX = i;
+                        playerPositionY = j;
                         map[i, j] = ' ';
                     }
                     else if (map[i, j] == '!')
                     {
-                        mob1X = i;
-                        mob1Y = j;
+                        mob1PositionX = i;
+                        mob1PositionY = j;
                         map[i, j] = ',';
                     }
                     else if (map[i, j] == '*')
                     {
-                        mob2X = i;
-                        mob2Y = j;
+                        mob2PositionX = i;
+                        mob2PositionY = j;
                         map[i, j] = ' ';
                     }
                     else if (map[i, j] == '$')
                     {
-                        mob3X = i;
-                        mob3Y = j;
+                        mob3PositionX = i;
+                        mob3PositionY = j;
                         map[i, j] = '/';
                     }
                 }
@@ -254,59 +254,59 @@ namespace Brave_New_World
             }
         }
 
-        static void Move(char[,] map, char symbol, ref int X, ref int Y, int DX, int DY)
+        static void Move(char[,] map, char symbol, ref int positionX, ref int positionY, int deltaX, int deltaY)
         {
-            Console.SetCursorPosition(Y, X);
-            Console.Write(map[X, Y]);
-            X += DX;
-            Y += DY;
-            Console.SetCursorPosition(Y, X);
+            Console.SetCursorPosition(positionY, positionX);
+            Console.Write(map[positionX, positionY]);
+            positionX += deltaX;
+            positionY += deltaY;
+            Console.SetCursorPosition(positionY, positionX);
             Console.Write(symbol);
         }
 
-        static void ChangeDirection(ConsoleKeyInfo key, ref int DX, ref int DY)
+        static void ChangeDirection(ConsoleKeyInfo key, ref int deltaX, ref int deltaY)
         {
             switch (key.Key)
             {
                 case ConsoleKey.UpArrow:
-                    DX = -1;
-                    DY = 0;
+                    deltaX = -1;
+                    deltaY = 0;
                     break;
                 case ConsoleKey.DownArrow:
-                    DX = 1;
-                    DY = 0;
+                    deltaX = 1;
+                    deltaY = 0;
                     break;
                 case ConsoleKey.LeftArrow:
-                    DX = 0;
-                    DY = -1;
+                    deltaX = 0;
+                    deltaY = -1;
                     break;
                 case ConsoleKey.RightArrow:
-                    DX = 0;
-                    DY = 1;
+                    deltaX = 0;
+                    deltaY = 1;
                     break;
             }
         }
 
-        static void ChangeDirection(Random random, ref int DX, ref int DY)
+        static void ChangeDirection(Random random, ref int deltaX, ref int deltaY)
         {
             int mobDirection = random.Next(1, 5);
             switch (mobDirection)
             {
                 case 1:
-                    DX = -1;
-                    DY = 0;
+                    deltaX = -1;
+                    deltaY = 0;
                     break;
                 case 2:
-                    DX = 1;
-                    DY = 0;
+                    deltaX = 1;
+                    deltaY = 0;
                     break;
                 case 3:
-                    DX = 0;
-                    DY = -1;
+                    deltaX = 0;
+                    deltaY = -1;
                     break;
                 case 4:
-                    DX = 0;
-                    DY = 1;
+                    deltaX = 0;
+                    deltaY = 1;
                     break;
             }
         }
@@ -356,7 +356,7 @@ namespace Brave_New_World
             }
             if (mobHealth <= 0)
             {
-                playerMaxHealth += 50;
+                playerMaxHealth += bonusHealth;
                 Console.SetCursorPosition(0, coordHealthBar);
                 Console.Write($"У вас {playerHealth} из {playerMaxHealth} здоровья.     ");
                 Console.SetCursorPosition(0, coordAdvenchureLog);
